@@ -10,19 +10,6 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Recipe Book")
 
 class MainWindow(QMainWindow):
-
-    def find_button_handler(self):
-        print('Find button clicked.')
-    def previous_button_handler(self):
-        print('Previous button clicked.')
-    def next_button_handler(self):
-        print('Next button clicked.')
-    def save_button_handler(self):
-        print('Save button clicked.')
-    def load_button_handler(self):
-        print('Load button clicked.')
-
-
     def __init__(self):
         super(MainWindow, self).__init__()
 
@@ -30,9 +17,9 @@ class MainWindow(QMainWindow):
 
         print('Loading window.')
 
-        layout1 = QVBoxLayout() #main layout for window
-        layout1.setContentsMargins(0,0,0,0)
-        layout1.setSpacing(10)
+        self.layout1 = QVBoxLayout() #main layout for window
+        self.layout1.setContentsMargins(0,0,0,0)
+        self.layout1.setSpacing(10)
         
         #finder tool    -------------------------------------------------------------------
         layout_finder = QHBoxLayout() 
@@ -48,7 +35,7 @@ class MainWindow(QMainWindow):
         layout_finder.addWidget(find_pulldown)
         groupbox1 = QGroupBox("Recipe Finder")
         groupbox1.setLayout(layout_finder)
-        layout1.addWidget(groupbox1)
+        self.layout1.addWidget(groupbox1)
 
         #Publishing -----------------------------------------------------------------------------------
         layout_pub = QHBoxLayout() # publishing tool
@@ -73,7 +60,7 @@ class MainWindow(QMainWindow):
         layout_pub.addWidget(pub_html_file)
         groupbox_pub = QGroupBox("Publish recipes to HTML")
         groupbox_pub.setLayout(layout_pub)
-        layout1.addWidget(groupbox_pub)
+        self.layout1.addWidget(groupbox_pub)
 
         #Previous/next buttons    -------------------------------------------------------------------
         layout3 = QHBoxLayout() # previous/next tool
@@ -83,7 +70,7 @@ class MainWindow(QMainWindow):
         next_button.clicked.connect(self.next_button_handler)
         layout3.addWidget(prev_button)
         layout3.addWidget(next_button)
-        layout1.addLayout( layout3 )
+        self.layout1.addLayout( layout3 )
 
         layout_main_recipe = QVBoxLayout() #main layout for window
 
@@ -117,7 +104,7 @@ class MainWindow(QMainWindow):
 
         groupbox_main_recipe = QGroupBox("Enter a recipe")
         groupbox_main_recipe.setLayout(layout_main_recipe)
-        layout1.addWidget(groupbox_main_recipe)
+        self.layout1.addWidget(groupbox_main_recipe)
 
         #Save and load the recipe --------------------------------------------------------------------------
         layout_saver = QHBoxLayout() # saver tool
@@ -134,7 +121,7 @@ class MainWindow(QMainWindow):
         layout_saver.addWidget(spacer)
         layout_saver.addWidget(load_button)
         layout_saver.addWidget(spacer)
-        layout1.addLayout( layout_saver )
+        self.layout1.addLayout( layout_saver )
 
         status_window = QHBoxLayout()
         status_text = QLabel(' Status:')
@@ -143,11 +130,23 @@ class MainWindow(QMainWindow):
         status_field.setMaximumSize(10000, 100)
         status_window.addWidget(status_text)
         status_window.addWidget(status_field)
-        layout1.addLayout(status_window)
+        self.layout1.addLayout(status_window)
 
         widget = QWidget()
-        widget.setLayout(layout1)
+        widget.setLayout(self.layout1)
         self.setCentralWidget(widget)
+
+
+    def find_button_handler(self):
+        print('Find button clicked.')
+    def previous_button_handler(self):
+        print('Previous button clicked.')
+    def next_button_handler(self):
+        print('Next button clicked.')
+    def save_button_handler(self):
+        print('Save button clicked.')
+    def load_button_handler(self):
+        print('Load button clicked.')
 
 app = QApplication(sys.argv)
 window = MainWindow()
