@@ -2,11 +2,6 @@ import sys
 from PySide6.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout, QMainWindow, QGroupBox
 from PySide6.QtWidgets import QPushButton, QLineEdit, QLabel, QComboBox, QPlainTextEdit
 
-
-import sys
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget
-from PySide6.QtGui import QPalette, QColor
-
 class MainWindow(QMainWindow):
 
     def __init__(self):
@@ -14,31 +9,35 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("Recipe Book")
 
-# class Color(QWidget):
-
-#     def __init__(self, color):
-#         super(Color, self).__init__()
-#         self.setAutoFillBackground(True)
-
-#         palette = self.palette()
-#         palette.setColor(QPalette.Window, QColor(color))
-#         self.setPalette(palette)
-
 class MainWindow(QMainWindow):
+
+    def find_button_handler(self):
+        print('Find button clicked.')
+    def previous_button_handler(self):
+        print('Previous button clicked.')
+    def next_button_handler(self):
+        print('Next button clicked.')
+    def save_button_handler(self):
+        print('Save button clicked.')
+    def load_button_handler(self):
+        print('Load button clicked.')
+
 
     def __init__(self):
         super(MainWindow, self).__init__()
 
         self.setWindowTitle("Recipe Book App")
 
-        layout1 = QVBoxLayout() #main layout for window
+        print('Loading window.')
 
+        layout1 = QVBoxLayout() #main layout for window
         layout1.setContentsMargins(0,0,0,0)
         layout1.setSpacing(10)
         
         #finder tool    -------------------------------------------------------------------
         layout_finder = QHBoxLayout() 
         find_button = QPushButton(" Find")
+        find_button.clicked.connect(self.find_button_handler)
         find_item = QLineEdit("")
         text1 = QLabel(" in the ")
         find_pulldown = QComboBox()
@@ -79,11 +78,12 @@ class MainWindow(QMainWindow):
         #Previous/next buttons    -------------------------------------------------------------------
         layout3 = QHBoxLayout() # previous/next tool
         prev_button = QPushButton("Previous Recipe")
+        prev_button.clicked.connect(self.previous_button_handler)
         next_button = QPushButton("Next Recipe")
+        next_button.clicked.connect(self.next_button_handler)
         layout3.addWidget(prev_button)
         layout3.addWidget(next_button)
         layout1.addLayout( layout3 )
-
 
         layout_main_recipe = QVBoxLayout() #main layout for window
 
@@ -124,8 +124,10 @@ class MainWindow(QMainWindow):
         text_dB_file = QLabel(" File:")
         text_dB_name = QLineEdit("recipes.json")
         save_button = QPushButton("Save Recipes")
+        save_button.clicked.connect(self.save_button_handler)
         spacer = QLabel('      ')
         load_button = QPushButton("Load Recipes")
+        load_button.clicked.connect(self.load_button_handler)
         layout_saver.addWidget(text_dB_file)
         layout_saver.addWidget(text_dB_name)
         layout_saver.addWidget(save_button)
@@ -143,15 +145,11 @@ class MainWindow(QMainWindow):
         status_window.addWidget(status_field)
         layout1.addLayout(status_window)
 
-
         widget = QWidget()
         widget.setLayout(layout1)
         self.setCentralWidget(widget)
 
-
 app = QApplication(sys.argv)
-
 window = MainWindow()
 window.show()
-
 app.exec()
