@@ -1,5 +1,5 @@
 import sys
-from PySide6.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout, QMainWindow
+from PySide6.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout, QMainWindow, QGroupBox
 from PySide6.QtWidgets import QPushButton, QLineEdit, QLabel, QComboBox, QPlainTextEdit
 
 
@@ -33,10 +33,8 @@ class MainWindow(QMainWindow):
 
         layout1 = QVBoxLayout() #main layout for window
 
-        
-
         layout1.setContentsMargins(0,0,0,0)
-        #layout1.setSpacing(20)
+        layout1.setSpacing(10)
         
         #finder tool    -------------------------------------------------------------------
         layout_finder = QHBoxLayout() 
@@ -49,7 +47,34 @@ class MainWindow(QMainWindow):
         layout_finder.addWidget(find_item)
         layout_finder.addWidget(text1)
         layout_finder.addWidget(find_pulldown)
-        layout1.addLayout( layout_finder )
+        groupbox1 = QGroupBox("Recipe Finder")
+        groupbox1.setLayout(layout_finder)
+        layout1.addWidget(groupbox1)
+
+        #Publishing -----------------------------------------------------------------------------------
+        layout_pub = QHBoxLayout() # publishing tool
+        text_pub1 = QLabel(" Enter recipe # or leave blank for all:")
+        pub_list = QLineEdit("")
+        text_width = QLabel(" Print width (mm):")
+        pub_width = QLineEdit("")
+        pub_width.setMaximumWidth(100)
+        text_height = QLabel(" Height:")
+        pub_height = QLineEdit("")
+        pub_height.setMaximumWidth(100)
+        text_html_file = QLabel(' HTML file:')
+        pub_html_file = QLineEdit("recipes.html")
+        layout_pub.addWidget(text_pub1)
+        layout_pub.addWidget(pub_list)
+        layout_pub.addWidget(text_width)
+        layout_pub.addWidget(pub_width)
+        
+        layout_pub.addWidget(text_height)
+        layout_pub.addWidget(pub_height)
+        layout_pub.addWidget(text_html_file)
+        layout_pub.addWidget(pub_html_file)
+        groupbox_pub = QGroupBox("Publish recipes to HTML")
+        groupbox_pub.setLayout(layout_pub)
+        layout1.addWidget(groupbox_pub)
 
         #Previous/next buttons    -------------------------------------------------------------------
         layout3 = QHBoxLayout() # previous/next tool
@@ -59,27 +84,10 @@ class MainWindow(QMainWindow):
         layout3.addWidget(next_button)
         layout1.addLayout( layout3 )
 
-        #Publishing -----------------------------------------------------------------------------------
-        layout_pub = QHBoxLayout() # publishing tool
-        text_pub1 = QLabel(" Enter recipe # or leave blank for all:")
-        pub_list = QLineEdit("")
-        text_width = QLabel(" Print width (mm):")
-        pub_width = QLineEdit("")
-        text_height = QLabel(" Height:")
-        pub_height = QLineEdit("")
-        text_html_file = QLabel(' HTML file:')
-        pub_html_file = QLineEdit("recipes.html")
-        layout_pub.addWidget(text_pub1)
-        layout_pub.addWidget(pub_list)
-        layout_pub.addWidget(text_width)
-        layout_pub.addWidget(pub_width)
-        layout_pub.addWidget(text_height)
-        layout_pub.addWidget(pub_height)
-        layout_pub.addWidget(text_html_file)
-        layout_pub.addWidget(pub_html_file)
-        layout1.addLayout( layout_pub )
 
-        #Recipe name and number --------------------------------------------------------------------------
+        layout_main_recipe = QVBoxLayout() #main layout for window
+
+        #Main recipe --------------------------------------------------------------------------
         layout_rec_name = QHBoxLayout()
         text_number = QLabel(' Rec. #:')
         rn_number = QLineEdit("0")
@@ -91,24 +99,28 @@ class MainWindow(QMainWindow):
         layout_rec_name.addWidget(rn_number)
         layout_rec_name.addWidget(text_name)
         layout_rec_name.addWidget(rn_name)
-        layout1.addLayout(layout_rec_name)
+        layout_main_recipe.addLayout(layout_rec_name)
 
         layout_ingr = QHBoxLayout()
         ingredients_text = QLabel(' Ingredients:')
         ingredients_field = QPlainTextEdit('')
         layout_ingr.addWidget(ingredients_text)
         layout_ingr.addWidget(ingredients_field)
-        layout1.addLayout(layout_ingr)
+        layout_main_recipe.addLayout(layout_ingr)
 
         layout_instruct = QHBoxLayout()
         instructions_text = QLabel(' Instructions:')
         instructions_field = QPlainTextEdit('')
         layout_instruct.addWidget(instructions_text)
         layout_instruct.addWidget(instructions_field)
-        layout1.addLayout(layout_instruct)
+        layout_main_recipe.addLayout(layout_instruct)
 
+        groupbox_main_recipe = QGroupBox("Enter a recipe")
+        groupbox_main_recipe.setLayout(layout_main_recipe)
+        layout1.addWidget(groupbox_main_recipe)
 
-        layout_saver = QHBoxLayout() # publishing tool
+        #Save and load the recipe --------------------------------------------------------------------------
+        layout_saver = QHBoxLayout() # saver tool
         text_dB_file = QLabel(" File:")
         text_dB_name = QLineEdit("recipes.json")
         save_button = QPushButton("Save Recipes")
@@ -120,7 +132,6 @@ class MainWindow(QMainWindow):
         layout_saver.addWidget(spacer)
         layout_saver.addWidget(load_button)
         layout_saver.addWidget(spacer)
-
         layout1.addLayout( layout_saver )
 
         status_window = QHBoxLayout()
