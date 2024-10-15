@@ -1,6 +1,8 @@
 import sys
+import json
 from PySide6.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout, QMainWindow, QGroupBox
 from PySide6.QtWidgets import QPushButton, QLineEdit, QLabel, QComboBox, QPlainTextEdit
+from PySide6.QtGui import QTextCursor
 
 class MainWindow(QMainWindow):
 
@@ -17,10 +19,10 @@ class MainWindow(QMainWindow):
 
         self.tok = {}
         self.all_recipes = {
-            'codes': {'': 0},
              'data': [{'name': '', 'ingredients': '', 'instructions': ''}]
              }
         self.current_recipe = 0
+        self.last_recipe = 0
 
         print('Loading window.')
 
@@ -84,7 +86,7 @@ class MainWindow(QMainWindow):
         #Main recipe --------------------------------------------------------------------------
         layout_rec_name = QHBoxLayout()
         text_number = QLabel(' Rec. #:')
-        self.tok['recipe_number'] = QLineEdit("0")
+        self.tok['recipe_number'] = QLineEdit("0/" + str(self.last_recipe))
         self.tok['recipe_number'].setReadOnly(True)
         self.tok['recipe_number'].setMaximumSize(100, 100)
         text_name = QLabel(' Name:')
@@ -144,16 +146,64 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(widget)
 
 
+    def update_recipe_record(self, recipe_number):
+        self.all_recipes['data'][recipe_number]['name'] = self.tok['recipe_name'].text()
+        self.all_recipes['data'][recipe_number]['ingredients'] = self.tok['ingredients'].toPlainText()
+        self.all_recipes['data'][recipe_number]['instructions'] = self.tok['instructions'].toPlainText()
+    
+    def update_recipe_display(self, recipe_number):
+        self.tok['recipe_name'].setText(self.all_recipes['data'][recipe_number]['name'])
+        self.tok['ingredients'].setPlainText(self.all_recipes['data'][recipe_number]['ingredients'])
+        self.tok['instructions'].setPlainText(self.all_recipes['data'][recipe_number]['instructions'])
+        self.tok['recipe_number'].setText( str(recipe_number) + '/' + str(self.last_recipe))
+
     def find_button_handler(self):
         print('Find button clicked.')
     def previous_button_handler(self):
         print('Previous button clicked.')
+        self.tok['status'].moveCursor(QTextCursor.End)
+        if self.current_recipe == 0:
+            self.tok['status'].insertPlainText('Beginning of records reached.\n')
+        else:
+            if self.tok['recipe_name'].text() != '':
+                self.update_recipe_record(self.current_recipe)
+            self.current_recipe = self.current_recipe - 1
+            self.update_recipe_display(self.current_recipe)            
+
     def next_button_handler(self):
         print('Next button clicked.')
+        self.tok['status'].moveCursor(QTextCursor.End)
+        if self.current_recipe < self.last_recipe:
+            self.update_recipe_record(self.current_recipe)
+            self.current_recipe = self.current_recipe + 1
+            self.update_recipe_display(self.current_recipe)
+        else:
+            self.tok['status'].insertPlainText('End of records reached.\n')
+            if self.current_recipe == self.last_recipe and self.tok['recipe_name'].text() != '':
+                self.update_recipe_record(self.current_recipe)
+                self.all_recipes['data'].append({'name': '', 'ingredients': '', 'instructions': ''})
+                self.current_recipe = self.current_recipe + 1
+                self.last_recipe = self.last_recipe + 1
+                self.update_recipe_display(self.current_recipe)
     def save_button_handler(self):
         print('Save button clicked.')
+        self.tok['status'].moveCursor(QTextCursor.End)
+        file_name = self.tok['json_file'].text()
+        with open(file_name, 'w') as f:
+            json.dump(self.all_recipes, f)
+        self.tok['status'].insertPlainText('Recipes saved to ' + str(file_name) +'\n')
+            
     def load_button_handler(self):
         print('Load button clicked.')
+        self.tok['status'].moveCursor(QTextCursor.End)
+        file_name = self.tok['json_file'].text()
+        with open(file_name, 'r') as f:
+            self.all_recipes = json.load(f)
+        self.tok['status'].insertPlainText('Recipes read from ' + str(file_name) + '\n')
+        self.last_recipe = len(self.all_recipes['data']) - 1
+        self.current_recipe = self.last_recipe
+        self.update_recipe_display(self.current_recipe)
+
 
 app = QApplication(sys.argv)
 window = MainWindow()
