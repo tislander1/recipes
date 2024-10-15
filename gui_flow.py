@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import time
 import webbrowser
 from PySide6.QtGui import QTextCursor
 from PySide6.QtWidgets import QPushButton, QLineEdit, QLabel, QComboBox, QPlainTextEdit
@@ -278,6 +279,9 @@ class MainWindow(QMainWindow):
         file_name = self.tok['json_file'].text()
         with open(file_name, 'r') as f:
             self.all_recipes = json.load(f)
+        autobackup_file = file_name + '_' + time.strftime("%Y%m%d_%H%M%S") +'.json'
+        with open(autobackup_file, 'w') as f:
+            json.dump(self.all_recipes, f)
         self.tok['status'].insertPlainText('Recipes read from ' + str(file_name) + '\n')
         self.last_recipe = len(self.all_recipes['data']) - 1
         self.current_recipe = self.last_recipe
