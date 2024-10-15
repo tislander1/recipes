@@ -1,8 +1,10 @@
+import os
 import sys
 import json
-from PySide6.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout, QMainWindow, QGroupBox
-from PySide6.QtWidgets import QPushButton, QLineEdit, QLabel, QComboBox, QPlainTextEdit
+import webbrowser
 from PySide6.QtGui import QTextCursor
+from PySide6.QtWidgets import QPushButton, QLineEdit, QLabel, QComboBox, QPlainTextEdit
+from PySide6.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout, QMainWindow, QGroupBox
 
 def format_recipe(input):
     input_split = input.split('\n')
@@ -250,13 +252,15 @@ class MainWindow(QMainWindow):
             recipe_number_list = None
         if isinstance(recipe_number_list, int):
             recipe_number_list = [recipe_number_list]
-        elif isinstance(recipe_number_list, int):
+        elif isinstance(recipe_number_list, list):
             recipe_number_list = recipe_number_list
         else:
             recipe_number_list = None
         html_string = generate_html_string(self.all_recipes, width_mm, height_mm, recipe_number_list)
         with open(html_file, 'w') as f:
             f.write(html_string)
+            dir1 = os.getcwd()
+        webbrowser.open('file:///' + dir1 + '/' + html_file)
         self.tok['status'].moveCursor(QTextCursor.End)
         self.tok['status'].insertPlainText('Recipes published to ' + str(html_file) +'\n')
 
