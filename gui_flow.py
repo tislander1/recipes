@@ -70,7 +70,7 @@ class MainWindow(QMainWindow):
         self.tok['find_item'] = QLineEdit("")
         text1 = QLabel(" in the ")
         self.tok['find_pulldown'] = QComboBox()
-        self.tok['find_pulldown'].addItems(['Recipe #', 'Recipe Name', 'Ingredients', 'Instructions', 'Anywhere'])
+        self.tok['find_pulldown'].addItems(['Recipe #', 'Recipe Name', 'Ingredients', 'Instructions', 'Any text field'])
         layout_finder.addWidget(find_button)
         layout_finder.addWidget(self.tok['find_item'])
         layout_finder.addWidget(text1)
@@ -195,6 +195,47 @@ class MainWindow(QMainWindow):
 
     def find_button_handler(self):
         print('Find button clicked.')
+        find_mapping = {'Recipe #': ['recipe_number'], 'Recipe Name': ['name'], 'Ingredients': ['ingredients'],
+        'Instructions': ['instructions'], 'Any text field': ['name', 'ingredients', 'instructions']}
+        pulldown = self.tok['find_pulldown'].currentText()
+        find_text = self.tok['find_item'].text()
+        find_fields = find_mapping[pulldown]
+        found_dict = {}
+        if find_fields != ['recipe_number']:
+            for item in find_fields:
+                for ix in range(len(self.all_recipes['data'])):
+                    val = self.all_recipes['data'][ix][item]
+                    if find_text in val:
+                        found_dict[ix] = self.all_recipes['data'][ix]['name']
+            x = 2
+            self.tok['status'].moveCursor(QTextCursor.End)
+            if len(found_dict) > 0:
+                self.current_recipe = list(found_dict.keys())[0]
+                self.tok['status'].insertPlainText('Found recipes: ' + str(found_dict) + '\n')
+                self.update_recipe_display(self.current_recipe)
+            else:
+                self.tok['status'].insertPlainText('No matching recipes were found.\n')
+        else:
+            print('Recipe number search ...')
+            found_rec_num = False
+            try:
+                rec_num = int(self.tok['find_item'].text())
+                found_rec_num = True
+            except:
+                self.tok['status'].moveCursor(QTextCursor.End)
+                self.tok['status'].insertPlainText('Could not get recipe number.\n')
+            if found_rec_num:
+                if rec_num >= 0 and rec_num <= self.last_recipe:
+                    self.current_recipe = rec_num
+                    self.update_recipe_display(self.current_recipe)
+                    self.tok['status'].moveCursor(QTextCursor.End)
+                    self.tok['status'].insertPlainText('Jumped to recipe #'+ str(rec_num) +'.\n')
+                else:
+                    self.tok['status'].moveCursor(QTextCursor.End)
+                    self.tok['status'].insertPlainText('Recipe #'+ str(rec_num) +' was not found.\n')
+
+
+
 
     def previous_button_handler(self):
         print('Previous button clicked.')
