@@ -199,14 +199,14 @@ class MainWindow(QMainWindow):
         find_mapping = {'Recipe #': ['recipe_number'], 'Recipe Name': ['name'], 'Ingredients': ['ingredients'],
         'Instructions': ['instructions'], 'Any text field': ['name', 'ingredients', 'instructions']}
         pulldown = self.tok['find_pulldown'].currentText()
-        find_text = self.tok['find_item'].text()
+        find_text = self.tok['find_item'].text().lower()
         find_fields = find_mapping[pulldown]
         found_dict = {}
         if find_fields != ['recipe_number']:
             for item in find_fields:
                 for ix in range(len(self.all_recipes['data'])):
                     val = self.all_recipes['data'][ix][item]
-                    if find_text in val:
+                    if find_text in val.lower():
                         found_dict[ix] = self.all_recipes['data'][ix]['name']
             x = 2
             self.tok['status'].moveCursor(QTextCursor.End)
