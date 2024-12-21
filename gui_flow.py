@@ -53,7 +53,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
 
-        self.setWindowTitle("Recipe Book App")
+        self.setWindowTitle("Recipe Book App ver. 1.1")
 
         self.tok = {}
         self.all_recipes = {
