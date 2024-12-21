@@ -27,11 +27,15 @@ def generate_html_string(recipes, width_mm, height_mm, recipe_number_list = None
 
         output += '<table border="1" style="width:' + str(width_mm) + 'mm; height:' + str(height_mm) +'mm; display:block; overflow: auto;">\n'
         output += '<tr><td>\n<table border="0">\n'
-        output += '<tr><td><font color="green"><b>' + str(rec_num) + '</b></font></td><td>' + str(recipe['name']) + '</td></tr>\n'
+        output += '<tr><td><font color="green"><b>' + str(rec_num) + '</b></font></td><td>' + str(recipe['name']) + '</td><td><font color="green"><b>&nbsp;' + str(recipe['meal']) + '</b></font></td></tr>\n'
         output += '</table></td></tr>\n'
         output += '<tr><td><font color="green"><b>Ingr: </b></font>' + str(recipe['ingredients']) + '</td></tr>\n'
         output += '<tr><td style="position: sticky; top: 0;">\n'
-        output += '<font color="green"><b>Dir: </b></font>' + format_recipe(recipe['instructions'])
+        output += '<font color="green"><b>Instr: </b></font>' + format_recipe(recipe['instructions'])
+        output += '<tr><td style="position: sticky; top: 0;">\n'
+        output += '<font color="green"><b>Cook: </b></font>' + format_recipe(recipe['cooking'])
+        output += '<tr><td style="position: sticky; top: 0;">\n'
+        output += '<font color="green"><b>Notes: </b></font>' + format_recipe(recipe['notes'])
         output += '</td></tr>\n'
         output += '</table><p>\n'
     output += '</body>\n'
@@ -71,7 +75,7 @@ class MainWindow(QMainWindow):
         self.tok['find_item'] = QLineEdit("")
         text1 = QLabel(" in the ")
         self.tok['find_pulldown'] = QComboBox()
-        self.tok['find_pulldown'].addItems(['Recipe #', 'Recipe Name', 'Ingredients', 'Instructions', 'Any text field'])
+        self.tok['find_pulldown'].addItems(['Recipe #', 'Recipe Name', 'Ingredients', 'Instructions', 'Cooking', 'Meal', 'Notes', 'Any text field'])
         layout_finder.addWidget(find_button)
         layout_finder.addWidget(self.tok['find_item'])
         layout_finder.addWidget(text1)
@@ -128,10 +132,15 @@ class MainWindow(QMainWindow):
         self.tok['recipe_number'].setMaximumSize(100, 100)
         text_name = QLabel(' Name:')
         self.tok['recipe_name'] = QLineEdit("")
+        text_meal = QLabel(' Meal:')
+        self.tok['meal'] = QLineEdit("")
+        self.tok['meal'].setMaximumSize(150, 150)
         layout_rec_name.addWidget(text_number)
         layout_rec_name.addWidget(self.tok['recipe_number'])
         layout_rec_name.addWidget(text_name)
         layout_rec_name.addWidget(self.tok['recipe_name'])
+        layout_rec_name.addWidget(text_meal)
+        layout_rec_name.addWidget(self.tok['meal'])
         layout_main_recipe.addLayout(layout_rec_name)
 
         layout_ingr = QHBoxLayout()
@@ -147,6 +156,20 @@ class MainWindow(QMainWindow):
         layout_instruct.addWidget(instructions_text)
         layout_instruct.addWidget(self.tok['instructions'])
         layout_main_recipe.addLayout(layout_instruct)
+
+        layout_cooking = QHBoxLayout()
+        cooking_text =     QLabel(' Cooking:')
+        self.tok['cooking'] = QPlainTextEdit('')
+        layout_cooking.addWidget(cooking_text)
+        layout_cooking.addWidget(self.tok['cooking'])
+        layout_main_recipe.addLayout(layout_cooking)
+    
+        layout_notes = QHBoxLayout()
+        notes_text = QLabel(' Notes:')
+        self.tok['notes'] = QPlainTextEdit('')
+        layout_notes.addWidget(notes_text)
+        layout_notes.addWidget(self.tok['notes'])
+        layout_main_recipe.addLayout(layout_notes)
 
         groupbox_main_recipe = QGroupBox("Enter a recipe")
         groupbox_main_recipe.setLayout(layout_main_recipe)
@@ -187,17 +210,26 @@ class MainWindow(QMainWindow):
         self.all_recipes['data'][recipe_number]['name'] = self.tok['recipe_name'].text()
         self.all_recipes['data'][recipe_number]['ingredients'] = self.tok['ingredients'].toPlainText()
         self.all_recipes['data'][recipe_number]['instructions'] = self.tok['instructions'].toPlainText()
+        self.all_recipes['data'][recipe_number]['cooking'] = self.tok['cooking'].toPlainText()
+        self.all_recipes['data'][recipe_number]['notes'] = self.tok['notes'].toPlainText()
+        self.all_recipes['data'][recipe_number]['meal'] = self.tok['meal'].text()
+
     
     def update_recipe_display(self, recipe_number):
         self.tok['recipe_name'].setText(self.all_recipes['data'][recipe_number]['name'])
         self.tok['ingredients'].setPlainText(self.all_recipes['data'][recipe_number]['ingredients'])
         self.tok['instructions'].setPlainText(self.all_recipes['data'][recipe_number]['instructions'])
+        self.tok['cooking'].setPlainText(self.all_recipes['data'][recipe_number]['cooking'])
+        self.tok['meal'].setText(self.all_recipes['data'][recipe_number]['meal'])
+        self.tok['notes'].setPlainText(self.all_recipes['data'][recipe_number]['notes'])
+
         self.tok['recipe_number'].setText( str(recipe_number) + '/' + str(self.last_recipe))
 
     def find_button_handler(self):
         print('Find button clicked.')
         find_mapping = {'Recipe #': ['recipe_number'], 'Recipe Name': ['name'], 'Ingredients': ['ingredients'],
-        'Instructions': ['instructions'], 'Any text field': ['name', 'ingredients', 'instructions']}
+        'Instructions': ['instructions'], 'Cooking' : ['cooking'], 'Meal': ['meal'], 'Notes': ['notes'],
+        'Any text field': ['name', 'ingredients', 'instructions', 'cooking', 'meal', 'notes']}
         pulldown = self.tok['find_pulldown'].currentText()
         find_text = self.tok['find_item'].text().lower()
         find_fields = find_mapping[pulldown]
@@ -234,9 +266,6 @@ class MainWindow(QMainWindow):
                 else:
                     self.tok['status'].moveCursor(QTextCursor.End)
                     self.tok['status'].insertPlainText('Recipe #'+ str(rec_num) +' was not found.\n')
-
-
-
 
     def previous_button_handler(self):
         print('Previous button clicked.')
